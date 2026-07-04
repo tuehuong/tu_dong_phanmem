@@ -3,18 +3,18 @@ name: Build EXE Complete
 on:
   push:
     branches: [ "main" ]
-  workflow_dispatch: # Cho phép bạn bấm nút chạy thủ công trên giao diện nếu cần
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: windows-latest  # Sử dụng môi trường Windows mới nhất của GitHub
+    runs-on: windows-latest
 
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v5  # Đây là action chính thức, chạy ổn định 100%
+      uses: actions/setup-python@v5
       with:
         python-version: '3.10'
         cache: 'pip'
@@ -27,10 +27,11 @@ jobs:
 
     - name: Build Binary (EXE)
       run: |
-        # Đóng gói thành 1 file exe duy nhất (--onefile) và ẩn màn hình đen cmd (--windowed)
-        python -m PyInstaller --noconfirm --onefile --windowed main.py
+        # Loại bỏ bớt một số module ẩn của hệ thống để tránh lỗi xung đột trên GitHub Actions
+        python -m PyInstaller --noconfirm --onefile --windowed --clean main.py
 
     - name: Upload Artifact
+      if: success() # Chỉ upload khi các bước trên chạy thành công hoàn toàn
       uses: actions/upload-artifact@v4
       with:
         name: Tool_Tu_Dong_Hoa_Windows
